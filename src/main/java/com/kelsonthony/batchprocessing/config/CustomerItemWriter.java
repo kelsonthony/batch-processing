@@ -10,7 +10,7 @@ import java.util.List;
 
 
 @Component
-public class CustomerWriter implements ItemWriter<Customer> {
+public class CustomerItemWriter implements ItemWriter<Customer> {
     @Autowired
     private CustomerRepository customerRepository;
 

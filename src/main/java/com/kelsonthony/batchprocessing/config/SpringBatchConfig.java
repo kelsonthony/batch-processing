@@ -2,15 +2,18 @@ package com.kelsonthony.batchprocessing.config;
 
 
 import com.kelsonthony.batchprocessing.entity.Customer;
+import com.kelsonthony.batchprocessing.listener.StepSkipListener;
 import com.kelsonthony.batchprocessing.partition.ColumnRangePartitioner;
 import lombok.AllArgsConstructor;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.SkipListener;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.partition.PartitionHandler;
 import org.springframework.batch.core.partition.support.TaskExecutorPartitionHandler;
+import org.springframework.batch.core.step.skip.SkipPolicy;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.LineMapper;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
@@ -28,7 +31,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 public class SpringBatchConfig {
     private JobBuilderFactory jobBuilderFactory;
     private StepBuilderFactory stepBuilderFactory;
-    private CustomerWriter customerWriter;
+    private CustomerItemWriter customerWriter;
 
     @Bean
     public FlatFileItemReader<Customer> reader() {
@@ -49,7 +52,7 @@ public class SpringBatchConfig {
         DelimitedLineTokenizer delimitedLineTokenizer = new DelimitedLineTokenizer();
         delimitedLineTokenizer.setDelimiter(",");
         delimitedLineTokenizer.setStrict(false);
-        delimitedLineTokenizer.setNames("id", "firstName", "lastName", "email", "gender", "contactNo", "country", "dob");
+        delimitedLineTokenizer.setNames("id", "firstName", "lastName", "email", "gender", "contactNo", "country", "dob", "age");
 
         BeanWrapperFieldSetMapper<Customer> fieldSetMapper = new BeanWrapperFieldSetMapper<>();
         fieldSetMapper.setTargetType(Customer.class);
@@ -84,10 +87,16 @@ public class SpringBatchConfig {
 
     @Bean
     public Step slaveStep() {
-        return stepBuilderFactory.get("slaveStep").<Customer, Customer>chunk(500)
+        return stepBuilderFactory.get("slaveStep").<Customer, Customer>chunk(5)
                 .reader(reader())
                 .processor(processor())
                 .writer(customerWriter)
+                .faultTolerant()
+                //.skipLimit(100)
+                //.skip(NumberFormatException.class) //Exception
+                //.noSkip(IllegalArgumentException.class)
+                .listener(skipListener())
+                .skipPolicy(skipPolicy())
                 .build();
     }
 
@@ -115,4 +124,15 @@ public class SpringBatchConfig {
 
         return threadPoolTaskExecutor;
     }
+
+    @Bean
+    public SkipPolicy skipPolicy() {
+        return new ExceptionSkip();
+    }
+
+    @Bean
+    public SkipListener skipListener() {
+        return new StepSkipListener();
+    }
+
 }
