@@ -1,4 +1,4 @@
-package com.kelsonthony.batchprocessing.config;
+package com.kelsonthony.batchprocessing.exception;
 
 import org.springframework.batch.core.step.skip.SkipLimitExceededException;
 import org.springframework.batch.core.step.skip.SkipPolicy;

@@ -6,6 +6,7 @@ import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.SkipListener;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,9 +18,13 @@ public class StepSkipListener implements SkipListener<Customer, Number> {
         logger.info("A failure on read {} ", throwable.getMessage());
     }
 
-    @Override // item Writer
+    @Override
     public void onSkipInWrite(Number item, Throwable throwable) {
-        logger.info("A failure on write {} , {} ", throwable.getMessage(), item);
+        if (throwable instanceof DuplicateKeyException) {
+            logger.warn("Duplicate entry found: {}", throwable.getMessage());
+        } else {
+            logger.info("A failure on write {} , {} ", throwable.getMessage(), item);
+        }
     }
 
     @SneakyThrows

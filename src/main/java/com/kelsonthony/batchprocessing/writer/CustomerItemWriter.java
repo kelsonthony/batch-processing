@@ -1,4 +1,4 @@
-package com.kelsonthony.batchprocessing.config;
+package com.kelsonthony.batchprocessing.writer;
 
 import com.kelsonthony.batchprocessing.entity.Customer;
 import com.kelsonthony.batchprocessing.repository.CustomerRepository;

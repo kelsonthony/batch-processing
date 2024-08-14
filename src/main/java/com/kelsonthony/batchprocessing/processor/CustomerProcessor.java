@@ -1,4 +1,4 @@
-package com.kelsonthony.batchprocessing.config;
+package com.kelsonthony.batchprocessing.processor;
 
 import com.kelsonthony.batchprocessing.entity.Customer;
 import org.springframework.batch.item.ItemProcessor;
