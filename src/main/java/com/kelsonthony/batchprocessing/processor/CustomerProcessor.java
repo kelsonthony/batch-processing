@@ -12,7 +12,7 @@ public class CustomerProcessor implements ItemProcessor<Customer, Customer> {
             return null;
         }*/
         int age = Integer.parseInt(customer.getAge());
-        if (age >= 18) {
+        if (age >= 1) {
             return  customer;
         } else {
             return null;
