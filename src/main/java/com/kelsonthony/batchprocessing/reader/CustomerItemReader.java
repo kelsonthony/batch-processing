@@ -4,9 +4,11 @@ import com.kelsonthony.batchprocessing.model.Customer;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.batch.item.ItemReader;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 
+import javax.annotation.PostConstruct;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Iterator;
@@ -16,9 +18,13 @@ public class CustomerItemReader implements ItemReader<Customer> {
 
     private Iterator<Row> rowIterator;
 
-    public CustomerItemReader() {
+    @Value("${customer.excel.filepath}")
+    private String filePath;
+
+    @PostConstruct
+    public void startReader() {
         try {
-            FileInputStream file = new FileInputStream("src/main/resources/customers.xlsx");
+            FileInputStream file = new FileInputStream(filePath);
             Workbook workbook = new XSSFWorkbook(file);
             Sheet sheet = workbook.getSheetAt(0);
             rowIterator = sheet.iterator();
