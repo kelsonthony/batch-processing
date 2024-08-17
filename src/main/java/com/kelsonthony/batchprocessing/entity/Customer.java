@@ -16,8 +16,8 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Customer {
+
     @Id
-    @Column(name = "CUSTOMER_ID")
     private int id;
     @Column(name = "FIRST_NAME")
     private String firstname;
