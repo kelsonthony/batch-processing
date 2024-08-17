@@ -1,6 +1,6 @@
 package com.kelsonthony.batchprocessing.processor;
 
-import com.kelsonthony.batchprocessing.entity.Customer;
+import com.kelsonthony.batchprocessing.model.Customer;
 import org.springframework.batch.item.ItemProcessor;
 
 public class CustomerProcessor implements ItemProcessor<Customer, Customer> {
@@ -12,7 +12,8 @@ public class CustomerProcessor implements ItemProcessor<Customer, Customer> {
             return null;
         }*/
         int age = Integer.parseInt(customer.getAge());
-        if (age >= 1) {
+        if (age >= 40) {
+            System.out.println("hello processor!!!" + age);
             return  customer;
         } else {
             return null;

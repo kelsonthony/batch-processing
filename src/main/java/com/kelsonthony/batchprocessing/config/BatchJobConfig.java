@@ -1,9 +1,10 @@
 package com.kelsonthony.batchprocessing.config;
 
-import com.kelsonthony.batchprocessing.entity.Customer;
+import com.kelsonthony.batchprocessing.listener.JobCompletionNotificationListener;
+import com.kelsonthony.batchprocessing.model.Customer;
 import com.kelsonthony.batchprocessing.partition.ColumnRangePartitioner;
 import com.kelsonthony.batchprocessing.processor.CustomerProcessor;
-import com.kelsonthony.batchprocessing.reader.ExcelItemReader;
+import com.kelsonthony.batchprocessing.reader.CustomerItemReader;
 import com.kelsonthony.batchprocessing.writer.CustomerItemWriter;
 import lombok.AllArgsConstructor;
 import org.springframework.batch.core.Job;
@@ -34,9 +35,11 @@ public class BatchJobConfig {
     private SkipPolicy skipPolicy;
     private SkipListener skipListener;
 
+    private final JobCompletionNotificationListener jobCompletionListener;
+
     @Bean
     public ItemReader<Customer> reader() {
-        return new ExcelItemReader();
+        return new CustomerItemReader();
     }
 
     @Bean
@@ -66,7 +69,7 @@ public class BatchJobConfig {
                 .processor(processor())
                 .writer(customerWriter)
                 .faultTolerant()
-                .listener(skipListener)
+                //.listener(skipListener)
                 .skipPolicy(skipPolicy)
                 .build();
     }
@@ -82,6 +85,9 @@ public class BatchJobConfig {
     @Bean
     public Job runJob() {
         return jobBuilderFactory.get("importCustomers")
-                .flow(masterStep()).end().build();
+                .listener(jobCompletionListener)
+                .flow(masterStep())
+                .end()
+                .build();
     }
 }
