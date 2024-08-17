@@ -1,5 +1,6 @@
 package com.kelsonthony.batchprocessing.config;
 
+import com.kelsonthony.batchprocessing.listener.CustomJobExecutionListener;
 import com.kelsonthony.batchprocessing.listener.JobCompletionNotificationListener;
 import com.kelsonthony.batchprocessing.model.Customer;
 import com.kelsonthony.batchprocessing.partition.ColumnRangePartitioner;
@@ -83,9 +84,10 @@ public class BatchJobConfig {
     }
 
     @Bean
-    public Job runJob() {
+    public Job runJob(CustomJobExecutionListener customJobExecutionListener) {
         return jobBuilderFactory.get("importCustomers")
                 .listener(jobCompletionListener)
+                .listener(customJobExecutionListener)
                 .flow(masterStep())
                 .end()
                 .build();

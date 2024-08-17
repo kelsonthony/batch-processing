@@ -1,6 +1,8 @@
 package com.kelsonthony.batchprocessing.controller;
 
 
+import com.kelsonthony.batchprocessing.dto.JobResultDTO;
+import com.kelsonthony.batchprocessing.listener.CustomJobExecutionListener;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
@@ -12,53 +14,43 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/jobs")
 public class CustomerController {
 
-
     private final JobLauncher jobLauncher;
-
-
     private final Job job;
+    private final CustomJobExecutionListener customJobExecutionListener;
 
-    public CustomerController(JobLauncher jobLauncher, Job job) {
+    public CustomerController(JobLauncher jobLauncher, Job job, CustomJobExecutionListener customJobExecutionListener) {
         this.jobLauncher = jobLauncher;
         this.job = job;
+        this.customJobExecutionListener = customJobExecutionListener;
     }
 
     @PostMapping(path = "/importCustomers")
-    public ResponseEntity<String> startBach() {
+    public ResponseEntity<JobResultDTO> startBatch() {
         JobParameters jobParameters = new JobParametersBuilder()
                 .addLong("startAt", System.currentTimeMillis()).toJobParameters();
         try {
             JobExecution jobExecution = jobLauncher.run(job, jobParameters);
 
-            // Retorna uma resposta HTTP 201 (Created) com o resultado do corpo da chamada
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body("Batch job started successfully. Execution ID: " + jobExecution.getId());
-        } catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException |
-                 JobParametersInvalidException e) {
-            e.printStackTrace();
+            // Wait for job to finish
+            while (jobExecution.isRunning()) {
+                Thread.sleep(1000); // Sleep for a while before checking job status again
+                jobExecution = jobLauncher.run(job, jobParameters); // Re-run to check the updated state
+            }
 
-            // Em caso de erro, retorna uma resposta HTTP 500 (Internal Server Error)
+            // Retrieve results from the listener
+            JobResultDTO jobResult = customJobExecutionListener.getJobResult(jobExecution.getId());
+            return ResponseEntity.status(HttpStatus.CREATED).body(jobResult);
+        } catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException |
+                 JobParametersInvalidException | InterruptedException e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to start batch job: " + e.getMessage());
+                    .body(null);
         }
     }
-
-//    @PostMapping(path = "/importCustomers")
-//    public void startBach() {
-//        JobParameters jobParameters = new JobParametersBuilder()
-//                .addLong("startAt", System.currentTimeMillis()).toJobParameters();
-//        try {
-//            jobLauncher.run(job, jobParameters);
-//        } catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException |
-//                 JobParametersInvalidException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
-
-
 }

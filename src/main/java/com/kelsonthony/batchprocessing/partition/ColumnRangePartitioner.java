@@ -11,7 +11,7 @@ public class ColumnRangePartitioner implements Partitioner {
     public Map<String, ExecutionContext> partition(int gridSize) {
         int min = 1;
         int max = 1000;
-        int targetSize = (max - min + 1) / gridSize; // O "+1" garante que todos os itens sejam cobertos
+        int targetSize = (max - min + 1) / gridSize;
         System.out.println("targetSize: " + targetSize);
         Map<String, ExecutionContext> result = new HashMap<>();
 
@@ -29,7 +29,6 @@ public class ColumnRangePartitioner implements Partitioner {
             value.putInt("minValue", start);
             value.putInt("maxValue", end);
 
-            // Avançar para a próxima partição
             start = end + 1;
             end = start + targetSize - 1;
             number++;
