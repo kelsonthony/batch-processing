@@ -6,11 +6,7 @@ import org.springframework.batch.item.ItemProcessor;
 public class CustomerProcessor implements ItemProcessor<Customer, Customer> {
     @Override
     public Customer process(Customer customer) throws Exception {
-        /*if (customer.getCountry().equals("United States")) {
-            return  customer;
-        } else {
-            return null;
-        }*/
+
         int age = Integer.parseInt(customer.getAge());
         if (age >= 40) {
             System.out.println("hello processor!!!" + age);
@@ -19,6 +15,5 @@ public class CustomerProcessor implements ItemProcessor<Customer, Customer> {
             return null;
         }
 
-        //return customer;
     }
 }

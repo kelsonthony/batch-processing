@@ -11,15 +11,14 @@ public class ColumnRangePartitioner implements Partitioner {
     public Map<String, ExecutionContext> partition(int gridSize) {
         int min = 1;
         int max = 1000;
-        int targetSize = (max - min) / gridSize + 1; //500
+        int targetSize = (max - min + 1) / gridSize; // O "+1" garante que todos os itens sejam cobertos
         System.out.println("targetSize: " + targetSize);
         Map<String, ExecutionContext> result = new HashMap<>();
 
         int number = 0;
         int start = min;
         int end = start + targetSize - 1;
-        // 1 to 500;
-        //501 to 1000
+
         while (start <= max) {
             ExecutionContext value = new ExecutionContext();
             result.put("partition" + number, value);
@@ -29,11 +28,14 @@ public class ColumnRangePartitioner implements Partitioner {
             }
             value.putInt("minValue", start);
             value.putInt("maxValue", end);
-            start += targetSize;
-            end += targetSize;
+
+            // Avançar para a próxima partição
+            start = end + 1;
+            end = start + targetSize - 1;
             number++;
         }
         System.out.println("partition result: " + result.toString());
         return result;
     }
 }
+
