@@ -3,6 +3,9 @@ package com.kelsonthony.batchprocessing.controller;
 
 import com.kelsonthony.batchprocessing.dto.JobResultDTO;
 import com.kelsonthony.batchprocessing.listener.CustomJobExecutionListener;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
@@ -31,6 +34,11 @@ public class CustomerController {
     }
 
     @PostMapping(path = "/importCustomers")
+    @Operation(summary = "Start Batch Job", description = "Starts the batch job to import customers and return the result.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Batch job started successfully."),
+            @ApiResponse(responseCode = "500", description = "Failed to start batch job.")
+    })
     public ResponseEntity<JobResultDTO> startBatch() {
         JobParameters jobParameters = new JobParametersBuilder()
                 .addLong("startAt", System.currentTimeMillis()).toJobParameters();
