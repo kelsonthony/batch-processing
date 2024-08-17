@@ -1,6 +1,8 @@
 .DS_Store
 HELP.md
 target/
+.mvn/
+mvnwmvnw.cmd
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
