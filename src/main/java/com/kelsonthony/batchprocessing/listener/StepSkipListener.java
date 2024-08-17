@@ -1,7 +1,7 @@
 package com.kelsonthony.batchprocessing.listener;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kelsonthony.batchprocessing.entity.Customer;
+import com.kelsonthony.batchprocessing.model.Customer;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

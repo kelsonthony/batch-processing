@@ -1,6 +1,6 @@
 package com.kelsonthony.batchprocessing.reader;
 
-import com.kelsonthony.batchprocessing.entity.Customer;
+import com.kelsonthony.batchprocessing.model.Customer;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.batch.item.ItemReader;
@@ -12,11 +12,11 @@ import java.io.IOException;
 import java.util.Iterator;
 
 @Component
-public class ExcelItemReader implements ItemReader<Customer> {
+public class CustomerItemReader implements ItemReader<Customer> {
 
     private Iterator<Row> rowIterator;
 
-    public ExcelItemReader() {
+    public CustomerItemReader() {
         try {
             FileInputStream file = new FileInputStream("src/main/resources/customers.xlsx");
             Workbook workbook = new XSSFWorkbook(file);
@@ -33,7 +33,6 @@ public class ExcelItemReader implements ItemReader<Customer> {
         if (rowIterator.hasNext()) {
             Row row = rowIterator.next();
             Customer customer = new Customer();
-            customer.setId(getNumericCellValue(row.getCell(0)));
             customer.setFirstname(getStringCellValue(row.getCell(1)));
             customer.setLastName(getStringCellValue(row.getCell(2)));
             customer.setEmail(getStringCellValue(row.getCell(3)));

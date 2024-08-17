@@ -1,9 +1,9 @@
 package com.kelsonthony.batchprocessing.config;
 
-import com.kelsonthony.batchprocessing.entity.Customer;
+import com.kelsonthony.batchprocessing.model.Customer;
 import com.kelsonthony.batchprocessing.partition.ColumnRangePartitioner;
 import com.kelsonthony.batchprocessing.processor.CustomerProcessor;
-import com.kelsonthony.batchprocessing.reader.ExcelItemReader;
+import com.kelsonthony.batchprocessing.reader.CustomerItemReader;
 import com.kelsonthony.batchprocessing.writer.CustomerItemWriter;
 import lombok.AllArgsConstructor;
 import org.springframework.batch.core.Job;
@@ -36,7 +36,7 @@ public class BatchJobConfig {
 
     @Bean
     public ItemReader<Customer> reader() {
-        return new ExcelItemReader();
+        return new CustomerItemReader();
     }
 
     @Bean
