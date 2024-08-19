@@ -37,4 +37,3 @@ public class ColumnRangePartitioner implements Partitioner {
         return result;
     }
 }
-
